@@ -39,7 +39,7 @@ async function createTables() {
         age INTEGER,
         email VARCHAR(255),
         "ownerId" INTEGER REFERENCES users(id)
-      );
+      )
     `)
   } catch(ex) {
     console.log('CREATING TABLES FAILED!');
@@ -59,9 +59,7 @@ async function createInitialUsers() {
 
 async function createInitialPuppies() {
   try {
-    const puppyArr = await Promise.all(puppies.map(createPuppy));
-    
-    console.log(puppyArr)
+    await Promise.all(puppies.map(createPuppy));
   } catch(ex) {
     console.log('ERROR CREATING PUPPIES');
     console.log(ex.error);
@@ -75,19 +73,19 @@ async function buildDB() {
     client.connect();
     
     console.log('Dropping tables.');
-    dropTables();
+    await dropTables();
     console.log('Finished Dropping tables.');
     
     console.log('Creating tables.');
-    createTables();
+    await createTables();
     console.log('Finished Creating Tables.');
     
     console.log('Creating Initial Users.');
-    createInitialUsers();
+    await createInitialUsers();
     console.log('Finished Creating Initial Users.');
     
     console.log('Creating Initial Puppies');
-    // createInitialPuppies();
+    await createInitialPuppies();
     console.log('Finished Creating Initial Puppies');
     
     
