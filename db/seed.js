@@ -2,15 +2,20 @@ const {
   client, 
   createUser, 
   createPuppy, 
-  updateUser 
+  updateUser,
+  createTrick,
+  addTrickToPuppy,
+  getOwnersAndPuppies
 } = require('./index');
 
-const { users, puppies } = require('./seed_data');
+const { users, puppies, tricks } = require('./seed_data');
 
 
 async function dropTables() {
   try {
     await client.query(`
+      DROP TABLE IF EXISTS puppy_tricks;
+      DROP TABLE IF EXISTS tricks;
       DROP TABLE IF EXISTS puppies;
       DROP TABLE IF EXISTS users;
     `)
@@ -41,9 +46,24 @@ async function createTables() {
         "ownerId" INTEGER REFERENCES users(id)
       )
     `)
+    
+    await client.query(`
+      CREATE TABLE tricks (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255)
+      );
+    `)
+    
+    await client.query(`
+      CREATE TABLE puppy_tricks (
+        id SERIAL PRIMARY KEY,
+        "puppyId" INTEGER REFERENCES puppies(id),
+        "trickId" INTEGER REFERENCES tricks(id)
+      );
+    `)
   } catch(ex) {
     console.log('CREATING TABLES FAILED!');
-    console.log(ex.error);
+    console.log(ex);
   }
 }
 
@@ -53,7 +73,7 @@ async function createInitialUsers() {
     await Promise.all(users.map(createUser));
   } catch(ex) {
     console.log('ERROR CREATING USERS!');
-    console.log(ex.error);
+    console.log(ex);
   }
 }
 
@@ -62,7 +82,16 @@ async function createInitialPuppies() {
     await Promise.all(puppies.map(createPuppy));
   } catch(ex) {
     console.log('ERROR CREATING PUPPIES');
-    console.log(ex.error);
+    console.log(ex);
+  }
+}
+
+async function createInitialTricks() {
+  try {
+    await Promise.all(tricks.map(createTrick));
+  } catch(ex) {
+    console.log('ERROR CREATING INITIAL TRICKS');
+    console.log(ex);
   }
 }
 
@@ -88,6 +117,13 @@ async function buildDB() {
     await createInitialPuppies();
     console.log('Finished Creating Initial Puppies');
     
+    
+    console.log('Creating tricks');
+    await createInitialTricks();
+    console.log('Finished creating initial tricks.')
+    
+    
+    console.log('Creating puppy-trick relations');
     
     // WHERE clause: finds records based on specified "WHERE" conditions
     const {rows: [userJoe]} = await client.query(`
@@ -137,6 +173,17 @@ async function buildDB() {
     
     console.log(updatedUser);
     
+    await addTrickToPuppy(1, 1)
+    await addTrickToPuppy(1, 2)
+    await addTrickToPuppy(2, 2)
+    await addTrickToPuppy(2, 3)
+    await addTrickToPuppy(5, 1)
+    await addTrickToPuppy(5, 2)
+    await addTrickToPuppy(5, 3)
+    
+    
+    const ownersAndTheirPuppies = await getOwnersAndPuppies();
+    console.log(ownersAndTheirPuppies);
     
     
   } catch(ex) {

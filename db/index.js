@@ -89,9 +89,54 @@ async function updateUser(id, fields = {}) {
   }
 }
 
+async function createTrick(trickTitle) {
+  try {
+    client.query(
+      `
+      INSERT INTO tricks (title)
+      VALUES ($1);
+    `,
+      [trickTitle]
+    );
+  } catch(ex) {
+    console.log("ERROR CREATING SINGLE TRICK");
+    console.log(ex);
+  }
+}
+
+async function addTrickToPuppy(puppyId, trickId) {
+  try {
+    client.query(`
+      INSERT INTO puppy_tricks ("puppyId", "trickId")
+      VALUES ($1, $2);
+    `, [puppyId, trickId])
+  } catch(ex) {
+    console.log("ERROR ADDING TRICK TO PUPPY");
+    console.log(ex);
+  }
+}
+
+async function getOwnersAndPuppies() {
+  try {
+    const { rows } = await client.query(`
+      SELECT users.name AS "ownerName", puppies.name AS "petName"
+      FROM puppies
+      INNER JOIN users ON puppies."ownerId" = users.id;
+    `)
+    
+    return rows;
+  } catch(ex) {
+    console.log("ERROR GETTING OWNERS AND PUPPIES");
+    console.log(ex);
+  }
+}
+
 module.exports = {
   client,
   createUser,
   createPuppy,
-  updateUser
+  updateUser,
+  createTrick,
+  addTrickToPuppy,
+  getOwnersAndPuppies
 }
