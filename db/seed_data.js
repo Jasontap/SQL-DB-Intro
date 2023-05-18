@@ -1,33 +1,39 @@
 const users = [
   {
-    name: "John",
+    username: "John",
     age: 36,
     email: "john@email.com",
+    password: '123456'
   },
   {
-    name: "Sara",
+    username: "Sara",
     age: 30,
     email: "Sara@email.com",
+    password: '123456'
   },
   {
-    name: "Joe",
+    username: "Joe",
     age: 45,
     email: "joe@email.com",
+    password: '123456'
   },
   {
-    name: "Remy",
+    username: "Remy",
     age: 30,
     email: "Remy@email.com",
+    password: '123456'
   },
   {
-    name: "Joe",
+    username: "Joe",
     age: 25,
-    email: "joe@email.com"
+    email: "joe@email.com",
+    password: '123456'
   },
   {
-    name: "Patty",
+    username: "Patty",
     age: 57,
-    email: "patty@email.com"
+    email: "patty@email.com",
+    password: '123456'
   }
 ];
 

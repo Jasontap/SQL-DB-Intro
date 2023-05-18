@@ -5,20 +5,21 @@ const connectionString =
 
 const client = new Client({ connectionString });
 
+// ============= DATABASE ADAPTERS ========================
 async function createUser(user) {
-  const { name, age, email } = user;
+  const { username, age, email, password } = user;
 
   try {
     const {
       rows: [user],
     } = await client.query(
       `
-      INSERT INTO users (name, age, email)
-      VALUES ($1, $2, $3)
+      INSERT INTO users (username, age, email, password)
+      VALUES ($1, $2, $3, $4)
       ON CONFLICT (email) DO NOTHING
       RETURNING *;
     `,
-      [name, age, email]
+      [username, age, email, password]
     );
 
     return user;
@@ -51,7 +52,6 @@ async function createPuppy(puppy) {
     console.log(ex);
   }
 }
-
 
 async function updateUser(id, fields = {}) {
   
@@ -119,7 +119,7 @@ async function addTrickToPuppy(puppyId, trickId) {
 async function getOwnersAndPuppies() {
   try {
     const { rows } = await client.query(`
-      SELECT users.name AS "ownerName", puppies.name AS "petName"
+      SELECT users.username AS "ownerName", puppies.name AS "petName"
       FROM puppies
       INNER JOIN users ON puppies."ownerId" = users.id;
     `)
@@ -131,6 +131,32 @@ async function getOwnersAndPuppies() {
   }
 }
 
+async function getAllPuppies() {
+  try {
+    const { rows } = await client.query(`
+      SELECT * FROM puppies;
+    `)
+    
+    return rows;
+  } catch(ex) {
+    console.log('ERROR GETTING ALL PUPPIES');
+    console.log(ex);
+  }
+}
+
+async function getAllUsers() {
+  try {
+    const {rows} = await client.query(`
+      SELECT * FROM users;
+    `)
+    
+    return rows;
+  } catch(ex) {
+    console.log('ERROR GETTING ALL USERS');
+    console.log(ex);
+  }
+}
+
 module.exports = {
   client,
   createUser,
@@ -138,5 +164,7 @@ module.exports = {
   updateUser,
   createTrick,
   addTrickToPuppy,
-  getOwnersAndPuppies
+  getOwnersAndPuppies,
+  getAllPuppies,
+  getAllUsers
 }

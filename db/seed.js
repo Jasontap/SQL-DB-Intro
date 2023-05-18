@@ -31,9 +31,10 @@ async function createTables() {
     await client.query(`
       CREATE TABLE users (
         id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
+        username VARCHAR(255) UNIQUE NOT NULL,
         age INTEGER,
-        email VARCHAR(255) UNIQUE NOT NULL
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL
       );
     `)
     
@@ -128,7 +129,7 @@ async function buildDB() {
     // WHERE clause: finds records based on specified "WHERE" conditions
     const {rows: [userJoe]} = await client.query(`
       SELECT * FROM users
-      WHERE "name"='Joe';
+      WHERE "username"='Joe';
     `)
     
     // const {rows} = await client.query(`
@@ -142,14 +143,14 @@ async function buildDB() {
     const { rows: [remy] } = await client.query(`
       SELECT * FROM users
       WHERE "age"=30
-      AND "name"='Remy';
+      AND "username"='Remy';
     `);
     
     // using OR:
     const { rows: [singleUser]} = await client.query(`
       SELECT * FROM users
       WHERE "age"=25 
-      OR "name"='Sara';
+      OR "username"='Sara';
     `)
 
     // using NOT
@@ -168,7 +169,7 @@ async function buildDB() {
     const updatedUser = await updateUser(3, {
       // email: 'joe1234@email.com',
       age: 46,
-      name: 'Joseph'
+      username: 'Joseph'
     })
     
     console.log(updatedUser);
