@@ -186,7 +186,7 @@ async function buildDB() {
     const ownersAndTheirPuppies = await getOwnersAndPuppies();
     console.log(ownersAndTheirPuppies);
     
-    
+    client.end();
   } catch(ex) {
     console.log('SOMETHING WENT WRONG BUILDING THE DB!');
     console.log(ex);
