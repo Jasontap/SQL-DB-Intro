@@ -1,7 +1,7 @@
 const { Client } = require("pg");
+require('dotenv').config();
 
-const connectionString =
-  process.env.DATABASE_URL || "postgres://localhost:5432/demo";
+const connectionString = process.env.DATABASE_URL;
 
 const client = new Client({ connectionString });
 
@@ -157,6 +157,73 @@ async function getAllUsers() {
   }
 }
 
+async function getSingleUser(username, password) {
+  try {
+    const { rows: [user] } = await client.query(`
+      SELECT * FROM users
+      WHERE username = $1;
+    `, [username]);
+    
+    if (user.password === password) {
+      delete user.password;
+      return {
+        error: false, 
+        user, 
+        message: 'User details are correct.'
+      }
+    } else {
+      return {
+        error: true,
+        message: 'Incorrect credentials.'
+      }
+    }
+  } catch(ex) {
+    console.log("ERROR GETTING SINGLE USER");
+    console.log(ex);
+  }
+};
+
+async function getUserById(userId) {
+  try {
+    const { rows: [user] } = await client.query(`
+      SELECT * FROM users
+      WHERE id = $1;
+    `, [userId] );
+    
+    if (user) {
+      delete user.password;
+      return {
+        error: false,
+        user,
+        message: "User details are correct.",
+      };
+    } else {
+      return {
+        error: true,
+        message: "Incorrect credentials.",
+      };
+    }
+  } catch(ex) {
+    console.log('ERROR GETTING USER BY ID');
+    console.log(ex);
+  }
+}
+
+async function getPuppiesByOwnerId(ownerId) {
+  try {
+    const { rows } = await client.query(`
+      SELECT * FROM puppies
+      WHERE "ownerId" = $1;
+    `, [ownerId]);
+    
+    return rows;
+  } catch(ex) {
+    console.log('ERROR GETTING PUPPIES BY OWNER ID');
+    console.log(ex);
+  }
+}
+
+
 module.exports = {
   client,
   createUser,
@@ -166,5 +233,8 @@ module.exports = {
   addTrickToPuppy,
   getOwnersAndPuppies,
   getAllPuppies,
-  getAllUsers
-}
+  getAllUsers,
+  getSingleUser,
+  getUserById,
+  getPuppiesByOwnerId
+};
