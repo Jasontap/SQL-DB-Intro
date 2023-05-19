@@ -56,6 +56,10 @@ app.use(async (req, res, next) => {
 
 app.use('/api', apiRouter);
 
+app.get('/', (req, res) => {
+  res.send('<h1>Thanks for using My API</h1>')
+})
+
 // 404 handler (non-existing routes)
 app.get('*', (req, res, next) => {
   res.status(404).send('<h1>Sorry this route does not exist!</h1>')
